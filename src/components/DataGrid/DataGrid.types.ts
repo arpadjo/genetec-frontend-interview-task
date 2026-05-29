@@ -8,3 +8,11 @@ export type DataGridColumn<T> = {
   filterable?: boolean;
   hidden?: boolean;
 };
+
+export type DataGridProps<T> = {
+  columns: DataGridColumn<T>[];
+  rows: T[];
+  getRowId: (row: T) => string;
+  isLoading?: boolean;
+  error?: string;
+};
