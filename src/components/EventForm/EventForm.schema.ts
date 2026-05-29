@@ -9,12 +9,6 @@ export const eventSchema = z.object({
     .refine((value) => !Number.isNaN(Date.parse(value)), {
       message: "Invalid date",
     }),
-
-  owner: z.string().min(1, "Owner is required"),
-
-  status: z.enum(["planned", "active", "done"]),
-
-  description: z.string(),
 });
 
 export type EventFormSchema = z.infer<typeof eventSchema>;
