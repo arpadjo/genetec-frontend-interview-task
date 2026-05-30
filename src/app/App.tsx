@@ -10,6 +10,8 @@ import {
   DialogContent,
   IconButton,
   Stack,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 
@@ -23,8 +25,11 @@ import type { EventItem } from "../types/event";
 import { toDateTimeLocalValue } from "../utils/formatDate";
 import { sortEvents } from "../utils/sortEvents";
 
+type GridDemoState = "normal" | "loading" | "empty" | "error";
+
 const App = () => {
   const [events, setEvents] = useState(mockEvents);
+  const [gridDemoState, setGridDemoState] = useState<GridDemoState>("normal");
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
@@ -99,6 +104,9 @@ const App = () => {
         date: toDateTimeLocalValue(editingEvent.date),
       }
     : undefined;
+  const gridRows = gridDemoState === "empty" ? [] : events;
+  const gridError =
+    gridDemoState === "error" ? "Failed to load events." : undefined;
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f6f7f9" }}>
@@ -143,6 +151,34 @@ const App = () => {
 
           <Box
             sx={{
+              alignItems: "center",
+              display: "flex",
+              gap: 2,
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography color="text.secondary" variant="body2">
+              DataGrid demo state
+            </Typography>
+            <ToggleButtonGroup
+              exclusive
+              onChange={(_, value: GridDemoState | null) => {
+                if (value) {
+                  setGridDemoState(value);
+                }
+              }}
+              size="small"
+              value={gridDemoState}
+            >
+              <ToggleButton value="normal">Normal</ToggleButton>
+              <ToggleButton value="loading">Loading</ToggleButton>
+              <ToggleButton value="empty">Empty</ToggleButton>
+              <ToggleButton value="error">Error</ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+
+          <Box
+            sx={{
               display: "grid",
               gap: 2,
               gridTemplateColumns: {
@@ -153,9 +189,11 @@ const App = () => {
           >
             <DataGrid
               columns={eventColumns}
+              error={gridError}
               getRowId={(event) => event.id}
+              isLoading={gridDemoState === "loading"}
               onEditRow={openEditForm}
-              rows={events}
+              rows={gridRows}
             />
             <Timeline events={events} />
           </Box>
