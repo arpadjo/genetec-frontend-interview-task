@@ -31,10 +31,10 @@ export const eventColumns: DataGridColumn<EventItem>[] = [
   },
 ];
 
-export function createGridColumns<T>(
+export const createGridColumns = <T,>(
   columns: DataGridColumn<T>[],
   actionColumn?: GridColDef,
-): GridColDef[] {
+): GridColDef[] => {
   const gridColumns: GridColDef[] = columns.map((column) => ({
     field: column.id,
     headerName: column.label,
@@ -49,11 +49,11 @@ export function createGridColumns<T>(
   }
 
   return [...gridColumns, actionColumn];
-}
+};
 
-export function createColumnVisibilityModel<T>(
+export const createColumnVisibilityModel = <T,>(
   columns: DataGridColumn<T>[],
-): Record<string, boolean> {
+): Record<string, boolean> => {
   return columns.reduce<Record<string, boolean>>(
     (visibilityModel, column) => ({
       ...visibilityModel,
@@ -61,12 +61,12 @@ export function createColumnVisibilityModel<T>(
     }),
     {},
   );
-}
+};
 
-function getCellValue<T>(
+const getCellValue = <T,>(
   row: T,
   accessor: DataGridColumn<T>["accessor"],
-): ReactNode {
+): ReactNode => {
   if (typeof accessor === "function") {
     return accessor(row);
   }
@@ -74,13 +74,13 @@ function getCellValue<T>(
   const value = row[accessor];
 
   return value == null ? "" : String(value);
-}
+};
 
-export function createGridRows<T>(
+export const createGridRows = <T,>(
   rows: T[],
   columns: DataGridColumn<T>[],
   getRowId: (row: T) => string,
-): GridRowsProp {
+): GridRowsProp => {
   return rows.map((row) => {
     return columns.reduce<Record<string, unknown>>(
       (gridRow, column) => ({
@@ -90,4 +90,4 @@ export function createGridRows<T>(
       { id: getRowId(row), __source: row },
     );
   });
-}
+};

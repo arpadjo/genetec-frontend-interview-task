@@ -40,18 +40,18 @@ const EVENT_CONTEXTS = [
   "field team",
 ] as const;
 
-function generateEventTitle() {
+const generateEventTitle = () => {
   const action = faker.helpers.arrayElement(EVENT_ACTIONS);
   const subject = faker.helpers.arrayElement(EVENT_SUBJECTS);
   const context = faker.helpers.arrayElement(EVENT_CONTEXTS);
 
   return `${action} ${subject} for ${context}`;
-}
+};
 
-export function generateMockEvents(
+export const generateMockEvents = (
   count = DEFAULT_EVENT_COUNT,
   seed = DEFAULT_SEED,
-): EventItem[] {
+): EventItem[] => {
   faker.seed(seed);
 
   const events = Array.from({ length: count }, (_, index) => {
@@ -68,4 +68,4 @@ export function generateMockEvents(
   });
 
   return sortEvents(events);
-}
+};

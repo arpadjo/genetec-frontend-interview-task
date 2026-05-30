@@ -20,12 +20,12 @@ const defaultValues: EventFormValues = {
   date: "",
 };
 
-export function EventForm({
+export const EventForm = ({
   initialValues = defaultValues,
   mode = "add",
   onCancel,
   onSubmit,
-}: EventFormProps) {
+}: EventFormProps) => {
   const title = mode === "add" ? "Add Event" : "Edit Event";
   const {
     control,
@@ -115,4 +115,4 @@ export function EventForm({
       </Stack>
     </Box>
   );
-}
+};

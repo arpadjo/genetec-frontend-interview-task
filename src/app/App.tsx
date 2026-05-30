@@ -23,7 +23,7 @@ import type { EventItem } from "../types/event";
 import { toDateTimeLocalValue } from "../utils/formatDate";
 import { sortEvents } from "../utils/sortEvents";
 
-function App() {
+const App = () => {
   const [events, setEvents] = useState(mockEvents);
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
@@ -197,6 +197,6 @@ function App() {
       </Dialog>
     </Box>
   );
-}
+};
 
 export default App;

@@ -15,14 +15,14 @@ type GridRowWithSource<T> = {
   __source: T;
 };
 
-export function DataGrid<T>({
+export const DataGrid = <T,>({
   columns,
   rows,
   getRowId,
   isLoading = false,
   error,
   onEditRow,
-}: DataGridProps<T>) {
+}: DataGridProps<T>) => {
   const actionColumn: GridColDef | undefined = onEditRow
     ? {
         field: "actions",
@@ -101,4 +101,4 @@ export function DataGrid<T>({
       )}
     </Paper>
   );
-}
+};
