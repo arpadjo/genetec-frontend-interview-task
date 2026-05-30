@@ -4,6 +4,8 @@ export type EventFormValues = {
 };
 
 export type EventFormProps = {
+  initialValues?: EventFormValues;
   mode?: "add" | "edit";
   onCancel?: () => void;
+  onSubmit: (values: EventFormValues) => void;
 };

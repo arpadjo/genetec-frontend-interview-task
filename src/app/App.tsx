@@ -2,6 +2,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -14,19 +15,40 @@ import {
 
 import { DataGrid } from "../components/DataGrid/DataGrid";
 import { EventForm } from "../components/EventForm/EventForm";
+import type { EventFormValues } from "../components/EventForm/EventForm.types";
 import { Timeline } from "../components/Timeline/Timeline";
 import { mockEvents } from "../data/mockEvents";
 import { eventColumns } from "../components/DataGrid/DataGrid.config";
+import { sortEvents } from "../utils/sortEvents";
 
 function App() {
+  const [events, setEvents] = useState(mockEvents);
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const openEventForm = () => {
+    setSuccessMessage("");
     setIsEventFormOpen(true);
   };
 
   const closeEventForm = () => {
     setIsEventFormOpen(false);
+  };
+
+  const clearSuccessMessage = () => {
+    setSuccessMessage("");
+  };
+
+  const addEvent = (values: EventFormValues) => {
+    const newEvent = {
+      id: crypto.randomUUID(),
+      title: values.title.trim(),
+      date: new Date(values.date).toISOString(),
+    };
+
+    setEvents((currentEvents) => sortEvents([...currentEvents, newEvent]));
+    setSuccessMessage(`Event "${newEvent.title}" was added.`);
+    closeEventForm();
   };
 
   return (
@@ -46,8 +68,7 @@ function App() {
                 Event Operations
               </Typography>
               <Typography color="text.secondary">
-                Static layout for the DataGrid, Timeline, and New Event form
-                demo.
+                DataGrid, Timeline, and New Event form demo.
               </Typography>
             </Box>
 
@@ -59,6 +80,17 @@ function App() {
               New Event
             </Button>
           </Box>
+
+          {successMessage ? (
+            <Alert
+              aria-live="polite"
+              onClose={clearSuccessMessage}
+              role="status"
+              severity="success"
+            >
+              {successMessage}
+            </Alert>
+          ) : null}
 
           <Box
             sx={{
@@ -73,9 +105,9 @@ function App() {
             <DataGrid
               columns={eventColumns}
               getRowId={(event) => event.id}
-              rows={mockEvents}
+              rows={events}
             />
-            <Timeline events={mockEvents} />
+            <Timeline events={events} />
           </Box>
         </Stack>
       </Container>
@@ -105,7 +137,7 @@ function App() {
           </IconButton>
         </Box>
         <DialogContent>
-          <EventForm onCancel={closeEventForm} />
+          <EventForm onCancel={closeEventForm} onSubmit={addEvent} />
         </DialogContent>
       </Dialog>
     </Box>

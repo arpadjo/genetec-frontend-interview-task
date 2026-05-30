@@ -1,20 +1,56 @@
 import {
   Box,
   Button,
-  Chip,
   Divider,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { FieldErrors } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
+import { eventSchema } from "./EventForm.schema";
 import type { EventFormProps } from "./EventForm.types";
+import type { EventFormValues } from "./EventForm.types";
 
-export function EventForm({ mode = "add", onCancel }: EventFormProps) {
+const defaultValues: EventFormValues = {
+  title: "",
+  date: "",
+};
+
+export function EventForm({
+  initialValues = defaultValues,
+  mode = "add",
+  onCancel,
+  onSubmit,
+}: EventFormProps) {
   const title = mode === "add" ? "Add Event" : "Edit Event";
+  const {
+    control,
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    setFocus,
+  } = useForm<EventFormValues>({
+    defaultValues: initialValues,
+    resolver: zodResolver(eventSchema),
+    shouldFocusError: true,
+  });
+
+  const focusFirstInvalidField = (fieldErrors: FieldErrors<EventFormValues>) => {
+    if (fieldErrors.title) {
+      setFocus("title");
+      return;
+    }
+
+    if (fieldErrors.date) {
+      setFocus("date");
+    }
+  };
 
   return (
-    <Box>
+    <Box component="form" noValidate onSubmit={handleSubmit(onSubmit, focusFirstInvalidField)}>
       <Box
         sx={{
           alignItems: "center",
@@ -31,13 +67,40 @@ export function EventForm({ mode = "add", onCancel }: EventFormProps) {
       </Box>
 
       <Stack spacing={2}>
-        <TextField
-          disabled
-          fullWidth
-          label="Title"
-          placeholder="Required title"
+        <Controller
+          control={control}
+          name="title"
+          render={({ field }) => (
+            <TextField
+              {...field}
+              autoFocus
+              error={Boolean(errors.title)}
+              fullWidth
+              helperText={errors.title?.message}
+              label="Title"
+              placeholder="Required title"
+            />
+          )}
         />
-        <TextField disabled fullWidth label="Date" type="datetime-local" />
+        <Controller
+          control={control}
+          name="date"
+          render={({ field }) => (
+            <TextField
+              {...field}
+              error={Boolean(errors.date)}
+              fullWidth
+              helperText={errors.date?.message}
+              label="Date"
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
+              type="datetime-local"
+            />
+          )}
+        />
 
         <Divider />
 
@@ -45,16 +108,10 @@ export function EventForm({ mode = "add", onCancel }: EventFormProps) {
           <Button onClick={onCancel} variant="outlined">
             Cancel
           </Button>
-          <Button disabled variant="contained">
+          <Button disabled={isSubmitting} type="submit" variant="contained">
             Save Event
           </Button>
         </Stack>
-
-        <Chip
-          label="Success message region"
-          variant="outlined"
-          sx={{ alignSelf: "start" }}
-        />
       </Stack>
     </Box>
   );
