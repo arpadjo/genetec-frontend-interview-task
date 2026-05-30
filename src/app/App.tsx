@@ -124,9 +124,6 @@ const App = () => {
               <Typography component="h1" variant="h4">
                 Event Operations
               </Typography>
-              <Typography color="text.secondary">
-                DataGrid, Timeline, and New Event form demo.
-              </Typography>
             </Box>
 
             <Button
@@ -158,7 +155,7 @@ const App = () => {
             }}
           >
             <Typography color="text.secondary" variant="body2">
-              DataGrid demo state
+              DataGrid demo state toggle
             </Typography>
             <ToggleButtonGroup
               exclusive
