@@ -1,73 +1,103 @@
-# React + TypeScript + Vite
+# Event Operations Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React demo app for the frontend technical task.
 
-Currently, two official plugins are available:
+The project uses `pnpm`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The app shows three reusable components:
 
-## React Compiler
+- `DataGrid`
+- `Timeline`
+- `EventForm`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- DataGrid with pagination, sorting, filtering, column visibility, loading, empty, and error states.
+- Timeline grouped by day.
+- Timeline keyboard navigation with arrow keys.
+- Screen-reader announcements when the focused timeline item changes.
+- Add and edit event form.
+- Form validation for required title and valid date.
+- Success message after saving.
+- Mock data only.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## How to Review
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Use the DataGrid toolbar to sort, filter, and hide/show columns.
+- Use the state toggle above the grid to see loading, empty, and error states.
+- Click the edit icon in the grid to edit an event.
+- Click `New Event` to add an event.
+- Focus a Timeline item and use arrow keys to move between events.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Accessibility
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Timeline items are keyboard focusable.
+Arrow keys move focus between events.
+A hidden live region announces the current day group and event title.
+
+## Data Model
+
+The event model is intentionally small:
+
+```ts
+type EventItem = {
+  id: string;
+  title: string;
+  date: string;
+};
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Choices
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- I used MUI for the UI components.
+- I used MUI X DataGrid because the task allows free open-source UI components, and it gives a strong table base.
+- I kept app state in React state because the data is local mock data only.
+- I used `react-hook-form` with `zod` for controlled form validation.
+- Timeline events are grouped by day because this is the grouping requested in the task.
+- Mock events are generated with Faker and sorted by date.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Trade-offs
+
+- MUI X DataGrid is used for table behavior because the task allows free UI components.
+- Local React state is used because the app only uses mock data.
+- Unit tests are not included because the task says they are not required.
+
+## Code Organization
+
+The app keeps reusable UI parts separated from app-level state.
+
+- `App` owns the demo state, modal state, and add/edit flow.
+- `DataGrid`, `Timeline`, and `EventForm` receive data and callbacks through props.
+- DataGrid-specific adapter logic lives next to the DataGrid component.
+- Shared helpers, like date formatting and sorting, live in `utils`.
+- Static values used across modules live in `constants`.
+- Types are kept explicit and small.
+
+## Folder Structure
+
+```txt
+src/
+  app/              App shell and page composition
+  components/       Reusable UI components
+    DataGrid/       DataGrid wrapper and column config
+    Timeline/       Timeline, groups, and items
+    EventForm/      Add/edit event form, schema, and types
+  constants/        Shared constant values
+  data/             Mock data
+  types/            Shared TypeScript types
+  utils/            Reusable helper functions
+```
+
+## Run
+
+```bash
+pnpm install
+pnpm dev
+```
+
+## Check
+
+```bash
+pnpm lint
+pnpm build
 ```
