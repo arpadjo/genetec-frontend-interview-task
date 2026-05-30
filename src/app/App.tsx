@@ -19,17 +19,21 @@ import { DataGrid } from "../components/DataGrid/DataGrid";
 import { EventForm } from "../components/EventForm/EventForm";
 import type { EventFormValues } from "../components/EventForm/EventForm.types";
 import { Timeline } from "../components/Timeline/Timeline";
+import {
+  GRID_DEMO_STATES,
+  type GridDemoState,
+} from "../constants/gridDemoStates";
 import { mockEvents } from "../data/mockEvents";
 import { eventColumns } from "../components/DataGrid/DataGrid.config";
 import type { EventItem } from "../types/event";
 import { toDateTimeLocalValue } from "../utils/formatDate";
 import { sortEvents } from "../utils/sortEvents";
 
-type GridDemoState = "normal" | "loading" | "empty" | "error";
-
 const App = () => {
   const [events, setEvents] = useState(mockEvents);
-  const [gridDemoState, setGridDemoState] = useState<GridDemoState>("normal");
+  const [gridDemoState, setGridDemoState] = useState<GridDemoState>(
+    GRID_DEMO_STATES.normal,
+  );
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
@@ -104,9 +108,11 @@ const App = () => {
         date: toDateTimeLocalValue(editingEvent.date),
       }
     : undefined;
-  const gridRows = gridDemoState === "empty" ? [] : events;
+  const gridRows = gridDemoState === GRID_DEMO_STATES.empty ? [] : events;
   const gridError =
-    gridDemoState === "error" ? "Failed to load events." : undefined;
+    gridDemoState === GRID_DEMO_STATES.error
+      ? "Failed to load events."
+      : undefined;
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f6f7f9" }}>
@@ -167,10 +173,12 @@ const App = () => {
               size="small"
               value={gridDemoState}
             >
-              <ToggleButton value="normal">Normal</ToggleButton>
-              <ToggleButton value="loading">Loading</ToggleButton>
-              <ToggleButton value="empty">Empty</ToggleButton>
-              <ToggleButton value="error">Error</ToggleButton>
+              <ToggleButton value={GRID_DEMO_STATES.normal}>Normal</ToggleButton>
+              <ToggleButton value={GRID_DEMO_STATES.loading}>
+                Loading
+              </ToggleButton>
+              <ToggleButton value={GRID_DEMO_STATES.empty}>Empty</ToggleButton>
+              <ToggleButton value={GRID_DEMO_STATES.error}>Error</ToggleButton>
             </ToggleButtonGroup>
           </Box>
 
@@ -188,7 +196,7 @@ const App = () => {
               columns={eventColumns}
               error={gridError}
               getRowId={(event) => event.id}
-              isLoading={gridDemoState === "loading"}
+              isLoading={gridDemoState === GRID_DEMO_STATES.loading}
               onEditRow={openEditForm}
               rows={gridRows}
             />
