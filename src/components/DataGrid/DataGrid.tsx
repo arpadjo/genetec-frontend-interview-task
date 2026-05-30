@@ -1,4 +1,7 @@
+import EditIcon from "@mui/icons-material/Edit";
+import { IconButton, Tooltip } from "@mui/material";
 import { DataGrid as MuiDataGrid } from "@mui/x-data-grid";
+import type { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { Box, Paper, Typography } from "@mui/material";
 
 import {
@@ -8,14 +11,39 @@ import {
 } from "./DataGrid.config";
 import type { DataGridProps } from "./DataGrid.types";
 
+type GridRowWithSource<T> = {
+  __source: T;
+};
+
 export function DataGrid<T>({
   columns,
   rows,
   getRowId,
   isLoading = false,
   error,
+  onEditRow,
 }: DataGridProps<T>) {
-  const gridColumns = createGridColumns(columns);
+  const actionColumn: GridColDef | undefined = onEditRow
+    ? {
+        field: "actions",
+        filterable: false,
+        headerName: "Actions",
+        sortable: false,
+        width: 96,
+        renderCell: (params: GridRenderCellParams<GridRowWithSource<T>>) => (
+          <Tooltip title="Edit event">
+            <IconButton
+              aria-label="Edit event"
+              onClick={() => onEditRow(params.row.__source)}
+              size="small"
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        ),
+      }
+    : undefined;
+  const gridColumns = createGridColumns(columns, actionColumn);
   const columnVisibilityModel = createColumnVisibilityModel(columns);
   const gridRows = createGridRows(rows, columns, getRowId);
 

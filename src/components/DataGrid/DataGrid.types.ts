@@ -15,4 +15,5 @@ export type DataGridProps<T> = {
   getRowId: (row: T) => string;
   isLoading?: boolean;
   error?: string;
+  onEditRow?: (row: T) => void;
 };

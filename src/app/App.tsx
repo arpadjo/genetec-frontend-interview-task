@@ -19,20 +19,31 @@ import type { EventFormValues } from "../components/EventForm/EventForm.types";
 import { Timeline } from "../components/Timeline/Timeline";
 import { mockEvents } from "../data/mockEvents";
 import { eventColumns } from "../components/DataGrid/DataGrid.config";
+import type { EventItem } from "../types/event";
+import { toDateTimeLocalValue } from "../utils/formatDate";
 import { sortEvents } from "../utils/sortEvents";
 
 function App() {
   const [events, setEvents] = useState(mockEvents);
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
 
   const openEventForm = () => {
+    setEditingEvent(null);
+    setSuccessMessage("");
+    setIsEventFormOpen(true);
+  };
+
+  const openEditForm = (event: EventItem) => {
+    setEditingEvent(event);
     setSuccessMessage("");
     setIsEventFormOpen(true);
   };
 
   const closeEventForm = () => {
     setIsEventFormOpen(false);
+    setEditingEvent(null);
   };
 
   const clearSuccessMessage = () => {
@@ -50,6 +61,44 @@ function App() {
     setSuccessMessage(`Event "${newEvent.title}" was added.`);
     closeEventForm();
   };
+
+  const saveEditedEvent = (values: EventFormValues) => {
+    if (!editingEvent) {
+      return;
+    }
+
+    const updatedEvent = {
+      ...editingEvent,
+      title: values.title.trim(),
+      date: new Date(values.date).toISOString(),
+    };
+
+    setEvents((currentEvents) =>
+      sortEvents(
+        currentEvents.map((event) =>
+          event.id === updatedEvent.id ? updatedEvent : event,
+        ),
+      ),
+    );
+    setSuccessMessage(`Event "${updatedEvent.title}" was updated.`);
+    closeEventForm();
+  };
+
+  const submitEventForm = (values: EventFormValues) => {
+    if (editingEvent) {
+      saveEditedEvent(values);
+      return;
+    }
+
+    addEvent(values);
+  };
+
+  const formInitialValues = editingEvent
+    ? {
+        title: editingEvent.title,
+        date: toDateTimeLocalValue(editingEvent.date),
+      }
+    : undefined;
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f6f7f9" }}>
@@ -105,6 +154,7 @@ function App() {
             <DataGrid
               columns={eventColumns}
               getRowId={(event) => event.id}
+              onEditRow={openEditForm}
               rows={events}
             />
             <Timeline events={events} />
@@ -130,14 +180,19 @@ function App() {
           }}
         >
           <Typography component="h2" id="event-form-dialog-title" variant="h6">
-            New Event
+            {editingEvent ? "Edit Event" : "New Event"}
           </Typography>
           <IconButton aria-label="Close event form" onClick={closeEventForm}>
             <CloseIcon />
           </IconButton>
         </Box>
         <DialogContent>
-          <EventForm onCancel={closeEventForm} onSubmit={addEvent} />
+          <EventForm
+            initialValues={formInitialValues}
+            mode={editingEvent ? "edit" : "add"}
+            onCancel={closeEventForm}
+            onSubmit={submitEventForm}
+          />
         </DialogContent>
       </Dialog>
     </Box>

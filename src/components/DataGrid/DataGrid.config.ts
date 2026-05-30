@@ -1,7 +1,11 @@
-import type { GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import type {
+  GridColDef,
+  GridRowsProp,
+} from "@mui/x-data-grid";
 import type { ReactNode } from "react";
 
 import type { EventItem } from "../../types/event";
+import { formatDate } from "../../utils/formatDate";
 import type { DataGridColumn } from "./DataGrid.types";
 
 export const eventColumns: DataGridColumn<EventItem>[] = [
@@ -14,7 +18,7 @@ export const eventColumns: DataGridColumn<EventItem>[] = [
   {
     id: "date",
     label: "Date",
-    accessor: (event) => new Date(event.date).toLocaleDateString(),
+    accessor: (event) => formatDate(event.date),
     sortable: true,
     filterable: true,
   },
@@ -27,8 +31,11 @@ export const eventColumns: DataGridColumn<EventItem>[] = [
   },
 ];
 
-export function createGridColumns<T>(columns: DataGridColumn<T>[]): GridColDef[] {
-  return columns.map((column) => ({
+export function createGridColumns<T>(
+  columns: DataGridColumn<T>[],
+  actionColumn?: GridColDef,
+): GridColDef[] {
+  const gridColumns: GridColDef[] = columns.map((column) => ({
     field: column.id,
     headerName: column.label,
     flex: 1,
@@ -36,6 +43,12 @@ export function createGridColumns<T>(columns: DataGridColumn<T>[]): GridColDef[]
     sortable: column.sortable ?? false,
     filterable: column.filterable ?? false,
   }));
+
+  if (!actionColumn) {
+    return gridColumns;
+  }
+
+  return [...gridColumns, actionColumn];
 }
 
 export function createColumnVisibilityModel<T>(
@@ -74,7 +87,7 @@ export function createGridRows<T>(
         ...gridRow,
         [column.id]: getCellValue(row, column.accessor),
       }),
-      { id: getRowId(row) },
+      { id: getRowId(row), __source: row },
     );
   });
 }

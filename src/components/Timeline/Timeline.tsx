@@ -1,12 +1,13 @@
 import { Box, Paper, Stack, Typography } from "@mui/material";
 
 import type { EventItem } from "../../types/event";
+import { formatDate } from "../../utils/formatDate";
 import { TimelineGroup } from "./TimelineGroup";
 import type { TimelineProps } from "./Timeline.types";
 
 function groupEventsByDate(events: EventItem[]) {
   return events.reduce<Record<string, EventItem[]>>((groups, event) => {
-    const date = new Date(event.date).toLocaleDateString();
+    const date = formatDate(event.date);
 
     return {
       ...groups,
