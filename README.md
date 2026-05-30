@@ -62,6 +62,15 @@ type EventItem = {
 - Local React state is used because the app only uses mock data.
 - Unit tests are not included because the task says they are not required.
 
+## Improvement ideas
+
+- Add focused unit and integration tests for the form, helpers, and main add/edit flow.
+- Add stronger responsive polish for small screens.
+- Customize the DataGrid toolbar so it only shows the actions needed by this task.
+- Add Timeline virtualization if the event list becomes much larger.
+- Move from mock data to an API-backed data layer if this became a real app.
+- Add better error handling around save/update actions (in case of API is being used).
+
 ## Code Organization
 
 The app keeps reusable UI parts separated from app-level state.
