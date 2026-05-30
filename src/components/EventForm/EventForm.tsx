@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Divider,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Divider, Stack, TextField } from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { FieldErrors } from "react-hook-form";
 import { Controller } from "react-hook-form";
@@ -22,11 +15,9 @@ const defaultValues: EventFormValues = {
 
 export const EventForm = ({
   initialValues = defaultValues,
-  mode = "add",
   onCancel,
   onSubmit,
 }: EventFormProps) => {
-  const title = mode === "add" ? "Add Event" : "Edit Event";
   const {
     control,
     formState: { errors, isSubmitting },
@@ -38,7 +29,9 @@ export const EventForm = ({
     shouldFocusError: true,
   });
 
-  const focusFirstInvalidField = (fieldErrors: FieldErrors<EventFormValues>) => {
+  const focusFirstInvalidField = (
+    fieldErrors: FieldErrors<EventFormValues>,
+  ) => {
     if (fieldErrors.title) {
       setFocus("title");
       return;
@@ -50,22 +43,11 @@ export const EventForm = ({
   };
 
   return (
-    <Box component="form" noValidate onSubmit={handleSubmit(onSubmit, focusFirstInvalidField)}>
-      <Box
-        sx={{
-          alignItems: "center",
-          display: "flex",
-          gap: 2,
-          justifyContent: "space-between",
-        }}
-      >
-        <Box>
-          <Typography component="h2" variant="h6">
-            {title}
-          </Typography>
-        </Box>
-      </Box>
-
+    <Box
+      component="form"
+      noValidate
+      onSubmit={handleSubmit(onSubmit, focusFirstInvalidField)}
+    >
       <Stack spacing={2}>
         <Controller
           control={control}

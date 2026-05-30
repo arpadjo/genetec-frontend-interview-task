@@ -224,7 +224,6 @@ const App = () => {
         <DialogContent>
           <EventForm
             initialValues={formInitialValues}
-            mode={editingEvent ? "edit" : "add"}
             onCancel={closeEventForm}
             onSubmit={submitEventForm}
           />
